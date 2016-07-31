@@ -8,9 +8,9 @@ class Amazon
   require 'nokogiri'
 
   API = ''
-  ACCESS_KEY_ID = 'AKIAI645PWZBCVEROBCA'
-  SECRET_ACCESS_KEY = '0xLsMktiHvHH2hnXBSZ/EbRhFpySlhAjMusIvPBO'
-  ASSOCIATE_TAG = 'citrite-23'
+  ACCESS_KEY_ID = 'YOUR_ACCESS_KEY_ID'
+  SECRET_ACCESS_KEY = 'YOUR_SECRET_ACCESS_KEY'
+  ASSOCIATE_TAG = 'YOUR_ASSOCIATE_TAG'
   ENDPOINT = 'webservices.amazon.cn'
   REQUEST_URI = '/onca/xml'
 
