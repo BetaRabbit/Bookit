@@ -38,7 +38,7 @@ class Amazon
 
   private
   def self.prepare_html_uri(item_id)
-    uri = "https://www.amazon.cn/dp/#{item_id}"
+    "https://www.amazon.cn/dp/#{item_id}"
   end
 
   def self.prepare_html_request(uri)
@@ -59,19 +59,22 @@ class Amazon
       doc = Nokogiri::HTML(html)
       title = doc.css('#productTitle').first.try(:content)
       author = doc.css('#byline').first
-                   .try(:content)
-                   .try(:gsub, /^\s+/, '')
-                   .try(:gsub, /[\n\t]/, '')
-                   .try(:gsub, /&.+$/, '')
+                 .try(:content)
+                 .try(:strip)
+                 .try(:gsub, /[\n\t]/, '')
+                 .try(:gsub, /&.+$/, '')
       price = doc.css('#tmmSwatches li.swatchElement.selected span.a-color-price').first
-                  .try(:content)
-                  .try(:gsub, /[^\d.]/, '')
+                .try(:content)
+                .try(:strip)
+                .try(:gsub, /[^\d.]/, '')
       publisher = doc.css('#detail_bullets_id table tr td div ul li').first
-                      .try(:content)
-                      .try(:gsub, /.+:\s+/, '')
+                    .try(:content)
+                    .try(:strip)
+                    .try(:gsub, /.+:\s+/, '')
       image = /(http[^\\]+?)":/.match(doc.css('#img-canvas img').first.try(:attr, 'data-a-dynamic-image'))
-                  .try(:captures)
-                  .try(:at, 0)
+                .try(:captures)
+                .try(:at, 0)
+
       {
           title: title,
           asin: item_id,
