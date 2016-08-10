@@ -1,7 +1,4 @@
 class Amazon
-  require 'time'
-  require 'openssl'
-  require 'base64'
   require 'net/http'
   require 'stringio'
   require 'zlib'
@@ -79,7 +76,7 @@ class Amazon
           title: title,
           asin: item_id,
           author: author,
-          price: price,
+          price: price.to_f,
           publisher: publisher,
           image: image,
           origin_url: origin_url,
