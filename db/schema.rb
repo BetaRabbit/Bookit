@@ -14,7 +14,7 @@ ActiveRecord::Schema.define(version: 20160731065255) do
 
   create_table "books", force: :cascade do |t|
     t.string   "title"
-    t.string   "asin"
+    t.string   "item_id"
     t.string   "author"
     t.string   "publisher"
     t.string   "image"

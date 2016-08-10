@@ -1,5 +1,6 @@
 class BooksController < ApplicationController
   require 'api/amazon'
+  require 'api/jd'
 
   before_action :set_book, only: [:show, :update, :destroy]
 
@@ -42,20 +43,30 @@ class BooksController < ApplicationController
 
   # POST /books/search
   def search
-    if Amazon.validate_url(params[:url])
-      item_id = Amazon.get_item_id(params[:url])
-      book = Book.find_by asin: item_id
 
-      if book
-        render json: book
-        puts book.update(Amazon.search(item_id, params[:url]))
-      else
-        book = Book.new(Amazon.search(item_id, params[:url]))
+    if Amazon.validate_url(params[:url])
+      api = Amazon
+    elsif Jd.validate_url(params[:url])
+      api = Jd
+    else
+      render json: { error: 'Not a valid www.amazon.cn or www.jd.com URL' }, status: :bad_request
+      return
+    end
+
+    item_id = api.get_item_id(params[:url])
+    book = Book.find_by item_id: item_id
+
+    if book
+      render json: book
+    else
+      new_book = api.search(item_id, params[:url])
+      if new_book
+        book = Book.new(new_book)
         book.save
         render json: book
+      else
+        render json: { error: 'Cannot read data from provided URL' }, status: :bad_request
       end
-    else
-      render json: { error: 'Not a valid www.amazon.cn URL' }, status: :bad_request
     end
   end
 

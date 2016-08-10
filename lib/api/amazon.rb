@@ -61,6 +61,7 @@ class Amazon
       author = doc.css('#byline').first
                  .try(:content)
                  .try(:strip)
+                 .try(:gsub, /\s+\(/, ' (')
                  .try(:gsub, /[\n\t]/, '')
                  .try(:gsub, /&.+$/, '')
       price = doc.css('#tmmSwatches li.swatchElement.selected span.a-color-price').first
@@ -77,7 +78,7 @@ class Amazon
 
       {
           title: title,
-          asin: item_id,
+          item_id: item_id,
           author: author,
           price: price.to_f,
           publisher: publisher,
