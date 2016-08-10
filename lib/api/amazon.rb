@@ -7,13 +7,6 @@ class Amazon
   require 'zlib'
   require 'nokogiri'
 
-  API = ''
-  ACCESS_KEY_ID = 'YOUR_ACCESS_KEY_ID'
-  SECRET_ACCESS_KEY = 'YOUR_SECRET_ACCESS_KEY'
-  ASSOCIATE_TAG = 'YOUR_ASSOCIATE_TAG'
-  ENDPOINT = 'webservices.amazon.cn'
-  REQUEST_URI = '/onca/xml'
-
   PRODUCT_URL = /^http[s]?:\/\/www\.amazon\.cn/
   PRODUCT_URL_PATTERN_1 = /dp\/(\w+)/
   PRODUCT_URL_PATTERN_2 = /gp\/product\/(\w+)/
@@ -34,14 +27,6 @@ class Amazon
   end
 
   def self.search(item_id, origin_url)
-    # try api request first
-    uri = URI(prepare_api_uri(item_id))
-    res = Net::HTTP.get(uri)
-    book = extract_data_from_xml(item_id, origin_url, res)
-
-    return book unless book.nil?
-
-    # fallback to html request
     uri = URI(prepare_html_uri(item_id))
     req = prepare_html_request(uri)
 
@@ -55,40 +40,6 @@ class Amazon
   end
 
   private
-  def self.prepare_api_uri(item_id)
-    params = {
-      'Service': 'AWSECommerceService',
-      'Operation': 'ItemLookup',
-      'AWSAccessKeyId': ACCESS_KEY_ID,
-      'AssociateTag': ASSOCIATE_TAG,
-      'IdType': 'ASIN',
-      'ItemId': item_id,
-      'ResponseGroup': 'Images,ItemAttributes,Offers',
-      'Version': '2011-08-01',
-      'Timestamp': Time.now.gmtime.iso8601
-    }
-
-    # Generate the canonical query
-    canonical_query_string = params.sort.collect do |key, value|
-      [
-        URI.escape(key.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")),
-        URI.escape(value.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-      ].join('=')
-    end.join('&')
-
-    # Generate the string to be signed
-    string_to_sign = "GET\n#{ENDPOINT}\n#{REQUEST_URI}\n#{canonical_query_string}"
-
-    # Generate the signature required by the Product Advertising API
-    signature = Base64.encode64(
-      OpenSSL::HMAC.digest(
-        OpenSSL::Digest.new('sha256'), SECRET_ACCESS_KEY,
-        string_to_sign)).strip()
-
-    # Generate the signed URL
-    "http://#{ENDPOINT}#{REQUEST_URI}?#{canonical_query_string}&Signature=#{URI.escape(signature, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
-  end
-
   def self.prepare_html_uri(item_id)
     uri = "https://www.amazon.cn/dp/#{item_id}"
   end
@@ -137,9 +88,5 @@ class Amazon
     rescue
       nil
     end
-  end
-
-  def self.extract_data_from_xml(item_id, origin_url, xml)
-    # TODO
   end
 end
