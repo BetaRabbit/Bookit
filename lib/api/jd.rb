@@ -53,31 +53,33 @@ class Jd
     begin
       doc = Nokogiri::HTML(html)
       title = doc.css('#name h1').first
-                .try(:content)
-                .try(:force_encoding, 'gbk')
-                .try(:encode, 'utf-8', 'gbk', encode_options)
-                .try(:strip)
+                .content
+                .force_encoding('gbk')
+                .encode('utf-8', 'gbk', encode_options)
+                .strip
 
       author = doc.css('#p-author').first
-                 .try(:content)
-                 .try(:force_encoding, 'gbk')
-                 .try(:encode, 'utf-8', 'gbk', encode_options)
-                 .try(:strip)
-                 .try(:gsub, /[\n\t]/, '')
-                 .try(:gsub, /&.+$/, '')
+                 .content
+                 .force_encoding('gbk')
+                 .encode('utf-8', 'gbk', encode_options)
+                 .strip
+                 .gsub(/[\n\t]/, '')
+                 .gsub(/&.+$/, '')
+
       price = doc.css('#jd-price').first
-                .try(:content)
-                .try(:force_encoding, 'gbk')
-                .try(:encode, 'utf-8', 'gbk', encode_options)
-                .try(:strip)
-                .try(:gsub, /[^\d.]/, '')
+                .content
+                .force_encoding('gbk')
+                .encode('utf-8', 'gbk', encode_options)
+                .strip
+                .gsub(/[^\d.]/, '')
+
       publisher = doc.css('#parameter2 li:first-child a').first
                     .try(:content)
-                    .try(:force_encoding, 'gbk')
-                    .try(:encode, 'utf-8', 'gbk', encode_options)
-                    .try(:strip)
-      image = 'http:' + doc.css('#spec-n1 img').first
-                .try(:attr, 'src')
+                    .force_encoding('gbk')
+                    .encode('utf-8', 'gbk', encode_options)
+                    .strip
+
+      image = 'http:' + doc.css('#spec-n1 img').first.attr('src')
 
       {
           title: title,

@@ -57,24 +57,26 @@ class Amazon
   def self.extract_data_from_html(item_id, origin_url, html)
     begin
       doc = Nokogiri::HTML(html)
-      title = doc.css('#productTitle').first.try(:content)
+      title = doc.css('#productTitle').first.content
+
       author = doc.css('#byline').first
-                 .try(:content)
-                 .try(:strip)
-                 .try(:gsub, /\s+\(/, ' (')
-                 .try(:gsub, /[\n\t]/, '')
-                 .try(:gsub, /&.+$/, '')
+                 .content
+                 .strip
+                 .gsub(/\s+\(/, ' (')
+                 .gsub(/[\n\t]/, '')
+                 .gsub(/&.+$/, '')
+
       price = doc.css('#tmmSwatches li.swatchElement.selected span.a-color-price').first
-                .try(:content)
-                .try(:strip)
-                .try(:gsub, /[^\d.]/, '')
+                .content
+                .strip
+                .gsub(/[^\d.]/, '')
+
       publisher = doc.css('#detail_bullets_id table tr td div ul li').first
-                    .try(:content)
-                    .try(:strip)
-                    .try(:gsub, /.+:\s+/, '')
-      image = /(http[^\\]+?)":/.match(doc.css('#img-canvas img').first.try(:attr, 'data-a-dynamic-image'))
-                .try(:captures)
-                .try(:at, 0)
+                    .content
+                    .strip
+                    .gsub(/.+:\s+/, '')
+
+      image = /(http[^\\]+?)":/.match(doc.css('#img-canvas img').first.attr('data-a-dynamic-image'))[0]
 
       {
           title: title,
