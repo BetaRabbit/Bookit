@@ -46,8 +46,10 @@ class BooksController < ApplicationController
 
     if Amazon.validate_url(params[:url])
       api = Amazon
+      item_id_type = 'asin'
     elsif Jd.validate_url(params[:url])
       api = Jd
+      item_id_type = 'jd_id'
     else
       render json: { error: 'Not a valid www.amazon.cn or www.jd.com URL' }, status: :bad_request
       return
@@ -57,7 +59,7 @@ class BooksController < ApplicationController
     # different retailers are be treated as different items,
     # because there is no effective way to distinguish them.
     item_id = api.get_item_id(params[:url])
-    book = Book.find_by item_id: item_id
+    book = Book.find_by "#{item_id_type}": item_id
 
     if book
       render json: book

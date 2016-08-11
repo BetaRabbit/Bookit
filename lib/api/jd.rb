@@ -49,41 +49,33 @@ class Jd
   end
 
   def self.extract_data_from_html(item_id, origin_url, html)
-    encode_options = {:invalid => :replace, :undef => :replace, :replace => '?'}
     begin
+      html.force_encoding('gbk')
+      html.encode!('utf-8', :undef => :replace, :invalid => :replace, :replace => '?')
       doc = Nokogiri::HTML(html)
       title = doc.css('#name h1').first
                 .content
-                .force_encoding('gbk')
-                .encode('utf-8', 'gbk', encode_options)
                 .strip
 
       author = doc.css('#p-author').first
                  .content
-                 .force_encoding('gbk')
-                 .encode('utf-8', 'gbk', encode_options)
                  .strip
                  .gsub(/[\n\t]/, '')
                  .gsub(/&.+$/, '')
 
       price = doc.css('#jd-price').first
                 .content
-                .force_encoding('gbk')
-                .encode('utf-8', 'gbk', encode_options)
                 .strip
                 .gsub(/[^\d.]/, '')
 
-      publisher = doc.css('#parameter2 li:first-child a').first
-                    .try(:content)
-                    .force_encoding('gbk')
-                    .encode('utf-8', 'gbk', encode_options)
-                    .strip
+      publisher = doc.css('#parameter2 li').find { |item| /出版社/ =~ item.content }
+                    .css('a').first.content
 
       image = 'http:' + doc.css('#spec-n1 img').first.attr('src')
 
       {
           title: title,
-          item_id: item_id,
+          jd_id: item_id,
           author: author,
           price: price,
           publisher: publisher,

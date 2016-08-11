@@ -80,7 +80,7 @@ class Amazon
 
       {
           title: title,
-          item_id: item_id,
+          asin: item_id,
           author: author,
           price: price.to_f,
           publisher: publisher,
