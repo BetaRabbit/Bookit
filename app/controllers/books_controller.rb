@@ -53,6 +53,9 @@ class BooksController < ApplicationController
       return
     end
 
+    # Find duplicates by ASIN (Amazon) or JDID (JD),
+    # different retailers are be treated as different items,
+    # because there is no effective way to distinguish them.
     item_id = api.get_item_id(params[:url])
     book = Book.find_by item_id: item_id
 
