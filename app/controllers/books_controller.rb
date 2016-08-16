@@ -6,7 +6,14 @@ class BooksController < ApplicationController
 
   # GET /books
   def index
-    @books = Book.all
+    @books = []
+
+    if params[:vote_session_id]
+      vote_session = VoteSession.find(params[:vote_session_id])
+      @books = vote_session.books
+    else
+      @books = Book.all
+    end
 
     render json: @books
   end

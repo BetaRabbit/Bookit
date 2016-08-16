@@ -15,7 +15,15 @@ class VotesController < ApplicationController
 
   # POST /votes
   def create
-    @vote = Vote.new(vote_params)
+    vote_session = VoteSession.find(vote_params[:vote_session])
+    book = Book.find(vote_params[:book])
+    user = User.find(vote_params[:user])
+
+    @vote = Vote.new(
+      vote_session: vote_session,
+      book: book,
+      user: user
+    )
 
     if @vote.save
       render json: @vote, status: :created, location: @vote
@@ -46,6 +54,6 @@ class VotesController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def vote_params
-      params.require(:vote).permit(:voter)
+      params.require(:vote).permit(:user, :book, :vote_session)
     end
 end

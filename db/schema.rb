@@ -41,13 +41,11 @@ ActiveRecord::Schema.define(version: 20160731065255) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer  "vote_id"
     t.string   "name"
     t.string   "email"
     t.string   "ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["vote_id"], name: "index_users_on_vote_id"
   end
 
   create_table "vote_sessions", force: :cascade do |t|
@@ -62,10 +60,11 @@ ActiveRecord::Schema.define(version: 20160731065255) do
   create_table "votes", force: :cascade do |t|
     t.integer  "book_id"
     t.integer  "vote_session_id"
-    t.string   "voter"
+    t.integer  "user_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.index ["book_id"], name: "index_votes_on_book_id"
+    t.index ["user_id"], name: "index_votes_on_user_id"
     t.index ["vote_session_id"], name: "index_votes_on_vote_session_id"
   end
 

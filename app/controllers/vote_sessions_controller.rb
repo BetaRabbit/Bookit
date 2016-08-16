@@ -1,3 +1,5 @@
+require 'date'
+
 class VoteSessionsController < ApplicationController
   before_action :set_vote_session, only: [:show, :update, :destroy]
 
@@ -15,6 +17,7 @@ class VoteSessionsController < ApplicationController
 
   # POST /@vote_sessions
   def create
+    params[:vote_session][:start_date] = Date.today.to_s if params[:vote_session][:start_date].blank?
     @vote_session = VoteSession.new(vote_session_params)
 
     if @vote_session.save

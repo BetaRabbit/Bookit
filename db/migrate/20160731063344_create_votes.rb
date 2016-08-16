@@ -3,7 +3,7 @@ class CreateVotes < ActiveRecord::Migration[5.0]
     create_table :votes do |t|
       t.belongs_to :book, index: true, foreign_key: true
       t.belongs_to :vote_session, index: true, foreign_key: true
-      t.string :voter
+      t.belongs_to :user, index: true, foreign_key: true
 
       t.timestamps
     end
