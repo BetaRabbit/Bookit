@@ -3,6 +3,7 @@ class Jd
   require 'stringio'
   require 'zlib'
   require 'nokogiri'
+  require 'json'
 
   PRODUCT_URL = /^http[s]?:\/\/item\.jd\.com/
   PRODUCT_URL_PATTERN = /item\.jd\.com\/(\d+)\.html/
@@ -73,6 +74,8 @@ class Jd
 
       image = 'http:' + doc.css('#spec-n1 img').first.attr('src')
 
+      price = price.blank? ? get_price(item_id) : price
+
       {
           title: title,
           jd_id: item_id,
@@ -87,5 +90,18 @@ class Jd
       puts e.message
       nil
     end
+  end
+
+  def self.get_price(item_id)
+    uri = URI("http://p.3.cn/prices/get?type=1&area=12_904_905&pdtk=&pduid=818879776&pdpin=&pdbp=0&skuid=J_#{item_id}&callback=cnp")
+    req = prepare_html_request(uri)
+
+    res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+      http.request(req)
+    end
+
+    json = JSON.parse(Zlib::GzipReader.new(StringIO.new(res.body)).read.gsub(/^cnp\(/, '').gsub(/\);/, ''))
+
+    json.first['p']
   end
 end

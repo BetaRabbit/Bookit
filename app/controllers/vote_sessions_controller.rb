@@ -5,7 +5,10 @@ class VoteSessionsController < ApplicationController
 
   # GET /@vote_sessions
   def index
-    @vote_sessions = VoteSession.all
+    @vote_sessions = VoteSession.includes(:books, :votes).all
+    @vote_sessions = @vote_sessions.map do |s|
+      { books: s.books.distinct.map { |b| { votes: b.votes }.merge(b.as_json) } }.merge(s.as_json)
+    end
 
     render json: @vote_sessions
   end

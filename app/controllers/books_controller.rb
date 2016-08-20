@@ -9,10 +9,14 @@ class BooksController < ApplicationController
     @books = []
 
     if params[:vote_session_id]
-      vote_session = VoteSession.find(params[:vote_session_id])
+      vote_session = VoteSession.includes(:books, :votes).find(params[:vote_session_id])
       @books = vote_session.books
     else
       @books = Book.all
+    end
+
+    @books = @books.map do |b|
+      { votes: b.votes }.merge(b.as_json)
     end
 
     render json: @books
@@ -20,6 +24,7 @@ class BooksController < ApplicationController
 
   # GET /books/1
   def show
+    @book = { votes: @book.votes }.merge @book.as_json
     render json: @book
   end
 
@@ -67,18 +72,19 @@ class BooksController < ApplicationController
     # because there is no effective way to distinguish them.
     item_id = api.get_item_id(params[:url])
     book = Book.find_by "#{item_id_type}": item_id
+    new_book = api.search(item_id, params[:url])
 
-    if book
-      render json: book
-    else
-      new_book = api.search(item_id, params[:url])
-      if new_book
+    if new_book
+      if book
+        book.update(new_book)
+        render json: book.as_json.merge({ votes: book.votes })
+      else
         book = Book.new(new_book)
         book.save
-        render json: book
-      else
-        render json: { error: 'Cannot read data from provided URL' }, status: :bad_request
+        render json: book.as_json.merge({ votes: book.votes })
       end
+    else
+      render json: { error: 'Cannot read data from provided URL' }, status: :bad_request
     end
   end
 

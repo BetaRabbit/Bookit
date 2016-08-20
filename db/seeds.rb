@@ -7,3 +7,4 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 User.create(name: 'anonymous', email: 'anonymous@citrite.net')
+VoteSession.create(name: 'Q3', start_date: Date.today.to_s, end_date: '2016-09-01', budget: 1000)
