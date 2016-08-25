@@ -8,7 +8,7 @@ Manage your team's book orders easily.
 > This is just the server side of Bookit, a pure RESTful API service, speak in JSON only.
 > Refer https://github.com/BetaRabbit/bookit-client for sample of client side implementation.
 
-> Powered by Rails 5 and his little friends
+> Powered by [Rails 5](https://github.com/rails/rails) and his little friends
 
 > Special thanks to www.jd.com
 
